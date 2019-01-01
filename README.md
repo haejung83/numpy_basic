@@ -13,7 +13,9 @@
   * [활성화 함수(Activation Function)]( activation.md)
     * Sigmoid, Step, ReLU, etc...
   * 항등 함수(Identity Function)
-    * Softmax
+    * Identity (Regression)
+    * Sigmoid (Binary classes)
+    * Softmax (Multi classes)
 
 * 
 

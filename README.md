@@ -20,9 +20,9 @@
 * 신경망
 
   * 페셉트론
-  * [활성화 함수(Activation Function)]( activation.md)
+  * [활성화 함수(Activation Function)](activation.md)
     * Sigmoid, Step, ReLU, etc...
-  * 항등 함수(Identity Function)
+  * [항등 함수(Identity Function)](identity.md)
     * Identity (Regression)
     * Sigmoid (Binary classes)
     * Softmax (Multi classes)

@@ -1,7 +1,7 @@
 import numpy as np
 
 def identity(x):
-    reutrn x
+    return x
 
 def softmax(x):
     xmax = np.max(x) # for preventing overflow

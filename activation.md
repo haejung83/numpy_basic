@@ -1,7 +1,3 @@
----
-typora-root-url: plot_images
----
-
 ### 활성화 함수 (Activation Function)
 
 > 입력 신호의 총 합을 특정 임계점에 대응하여 신호의 활성화를 결정한다. 즉, 들어오는 입력신호의(1~n개) 총합이 특정 임계점 이상을 넘어서면 1, 그렇지 않으면 0을 출력하게 한다.
@@ -23,7 +19,7 @@ typora-root-url: plot_images
 
    * exp는 자연상수 exponential을 의미 (2.718281828)
 
-     ![sigmoid plt](sigmoid_plt.png)
+     ![sigmoid plt](./plot_images/sigmoid_plt.png)
 
    * code
 
@@ -37,7 +33,7 @@ typora-root-url: plot_images
 2. Step
 
    * x가 0보다 크면 무조건 1, 0이거나 0보다 작으면 0을 출력
-     ![step plt](step_plt.png)
+     ![step plt](./plot_images/step_plt.png)
 
    * code
 
@@ -61,7 +57,7 @@ typora-root-url: plot_images
      $$
 
    * x가 0보다 크면 x를 그대로 출력하고, x가 0과 같거나 작으면 0을 출력한다.
-     ![relu plot](relu_plt.png)
+     ![relu plot](./plot_images/relu_plt.png)
 
    * code
 

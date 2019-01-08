@@ -26,7 +26,6 @@
     * Identity (Regression)
     * Sigmoid (Binary classes)
     * Softmax (Multi classes)
-
-* 
+  * [신경망 학습(Neural-Net Training)](training.md)
 
 

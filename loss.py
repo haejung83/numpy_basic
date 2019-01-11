@@ -21,4 +21,4 @@ def cross_entropy_error_by_index(y, t):
         y = y.reshape(1, y.size)
 
     batch_size = y.shape[0]
-    return -np.sum(np.log(y[np.arange(batch_szie), t])) / batch_size
+    return -np.sum(np.log(y[np.arange(batch_size), t])) / batch_size

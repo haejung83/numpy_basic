@@ -18,11 +18,21 @@ def numerical_gradient(f, x):
         
     return grad
 
+def numerical_gradient_batch(f, X):
+    if X.ndim == 1:
+        return numerical_gradient(f, X)
+    else:
+        grad = np.zeros_like(X)
+        print('X.shape: {}'.format(X.shape))
+        
+        for idx, x in enumerate(X):
+            grad[idx] = numerical_gradient(f, x)
+        return grad
 
 def gradient_descent(f, init_x, lr=0.01, step_num=100):
     x = init_x
     
-    for i in range(step_num):
+    for _ in range(step_num):
         grad = numerical_gradient(f, x)
         x -= lr * grad
         

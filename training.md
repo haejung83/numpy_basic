@@ -282,7 +282,7 @@
         
         def numerical_gradient(f, x):
             h = 1e-4
-            2h = 2*h
+            h2 = 2*h
             grad = np.zeros_like(x) #x랑 같은 크기의 배열을 생성하고 0으로 초기화
             
             for idx in range(x.size):
@@ -293,7 +293,7 @@
                 x[idx] = tmp_val - h # f(x-h)
                 fxh2 = f(x) # 마찬가지
                 
-                grad[idx] = (fxh1 - fxh2) / 2h # 중앙차분으로 기울기를 구함
+                grad[idx] = (fxh1 - fxh2) / h2 # 중앙차분으로 기울기를 구함
                 x[idx] = tmp_val # 복원
                 
             return grad

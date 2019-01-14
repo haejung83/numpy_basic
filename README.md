@@ -27,5 +27,9 @@
     * Sigmoid (Binary classes)
     * Softmax (Multi classes)
   * [신경망 학습(Neural-Net Training)](training.md)
+    * [손실 함수 (Loss Function)](loss_function.md)
+    * [미니 배치 학습 (Mini-Batch)](mini_batch.md)
+    * [수치 미분 (Numericla Differential)](numerical_differential.md)
+    * [기울기 (Gradient)](gradient.md)
 
 

@@ -37,7 +37,7 @@
   $$
   의 기울기는 아래 그림과 같다.
 
-  ![gradient_2d_plt](/home/haejung/working/github/numpy_basic/plot_images/gradient_2d_plt.png)
+  ![gradient_2d_plt](./plot_images/gradient_2d_plt.png)
 
 - 기울기는 위 그림처럼 바향을 가진 벡터로 표현된다.
 
@@ -83,7 +83,7 @@
          return x
      ```
 
-     ![gradient_method_plt](/home/haejung/working/github/numpy_basic/plot_images/gradient_method_plt.png)
+     ![gradient_method_plt](./plot_images/gradient_method_plt.png)
 
    - 위 그림은 초기값을 (-3, 4)로 설정하고 최솟값을 경사하강법으로 탐색한 과정을 나타낸다.
 

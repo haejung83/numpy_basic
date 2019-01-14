@@ -73,7 +73,7 @@
        $$
 
        - 그래프 x가 10일때
-         ![numerical_diff_10_plt](/home/haejung/working/github/numpy_basic/plot_images/numerical_diff_10_plt.png)
+         ![numerical_diff_10_plt](./plot_images/numerical_diff_10_plt.png)
 
 2. 편미분
 

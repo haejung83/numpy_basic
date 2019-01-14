@@ -1,4 +1,4 @@
-# 기계학습 기본 (Numpy 사용)
+## 기계학습 기본 (Numpy 사용)
 > 기계학습에 관련된 기본적인 내용을 학습과 동시에 기록
 
 > 기계학습용 프레임워크(TF, Pytorch 등)을 사용하지 않고 numpy 및 matplotlib등을 사용하여 작성
@@ -31,5 +31,6 @@
     * [미니 배치 학습 (Mini-Batch)](mini_batch.md)
     * [수치 미분 (Numericla Differential)](numerical_differential.md)
     * [기울기 (Gradient)](gradient.md)
+  * [오차역전파 (Back Propagation)](back_propagation.md)
 
 

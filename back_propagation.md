@@ -99,18 +99,128 @@
 
 3. 역전파 (Back Propagation)
    1. 덧셈 노드
+
+      * z = x + y 식을 대상으로 역전파의 덧셈을 보면서 각 미분을 계산해보면 다음과 같습니다.
+        $$
+        \frac{\partial z}{\partial x}=1 \\
+        \frac{\partial z}{\partial y}=1
+        $$
+
+      * 덧셈노드의 역전파는 입력 값을 그대로 흘려보낸다.
+
+      * 오른쪽에서 전해진 미분에 1을 곱하여 왼쪽으로 전달 합니다.
+
    2. 곱셈 노드
+
+      * z = xy 식을 대상으로 역전파의 곱셈을 보면 아래와 같은 미분을 해석적으로 얻을 수 있습니다.
+        $$
+        \frac{\partial z}{\partial x}=y \\
+        \frac{\partial z}{\partial y}=x
+        $$
+
+      * 곱셈 노드는 오른쪽에서 전달된 미분값을 순전파 계산때의 입력 신호값을 서로 바꾼 값으로 곱하여 왼쪽으로 전달 합니다. 
 
 4. 코드로 구현하기
    1. 덧셈 계층
+
+      * code
+
+        ```python
+        import numpy as np
+        
+        class AddLayer:
+            def __init__(self):
+                pass
+            
+            def forward(self, x, y):
+                return x + y
+        
+            def backward(self, dout):
+                dx = dout * 1
+                dy = dout * 1
+                return dx, dy
+        ```
+
    2. 곱셈 계층
+
+      * code
+
+        ```python
+        import numpy as np
+        
+        class MulLayer:
+            def __init__(self):
+                self.x = None
+                self.y = None
+        
+            def forward(self, x, y):
+                self.x = x
+                self.y = y
+                return x * y
+        
+            def backward(self, dout):
+                # 곱셈 노드의 역전파는 서로 반대편의 순전파 값을 곱하여 전달 합니다.
+                dx = dout * self.y
+                dy = dout * self.x
+                return dx, dy
+        ```
+
    3. 활성화 함수 계층
       1. ReLU
+
+         * 수식
+           $$
+           y= 
+           \begin{cases}
+               x  & (x \gt 0)\\
+               0  & (x \le 0)
+           \end{cases}
+           $$
+
+         * 여기서 x에 대한 y의 미분은 다음과 같다
+           $$
+           \frac{\partial y}{\partial x}= 
+           \begin{cases}
+               1  & (x \gt 0)\\
+               0  & (x \le 0)
+           \end{cases}
+           $$
+
+         * 위 미분식을 보면 ReLU로 들어온 순전파의 입력인 x가 0보다 크면 오른쪽에서 전달되는 역전파의 입력을 그대로 왼쪽으로 전달 합니다.
+
+         * 반면 순전파의 입력 x가 0이하이면 역전파 때의 신호는 하류로 보내지 않습니다. (0을 전달)
+
+         * code
+
+           ```python
+           import numpy as np
+           
+           class ReLU:
+               def __init__(self):
+                   self.mask = None
+           
+               def forward(self, x):
+                   self.mask = (x <= 0)
+                   out = x.copy()
+                   out[self.mask] = 0 # mask에서 True인 위치의 요소만 가져와 배열로 만든다.
+                   return out
+           
+               def backward(self, dout):
+                   dout[self.mask] = 0
+                   dx = dout
+                   return dx
+           ```
+
+           
+
       2. Sigmoid
+
    4. Affine/Softmax 계층
       1. Affine
       2. Softmax
+
    5. Batch Affine 계층
+
    6. Softmax with Loss 계층
 
 5. 최종 구현

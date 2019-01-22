@@ -215,6 +215,93 @@
 
       2. Sigmoid
 
+         * 수식
+           $$
+           y=\frac{1}{1+exp(-x)}
+           $$
+
+         * 삽화와 수식이 많이 필요하여 간소하게 설명합니다.
+
+         * 계산그래프
+
+           * y=exp(x)의 미분은 exp(x) 입니다.
+           * y=1/x의 미분은 -1/x^2 입니다.
+
+         * 순전파 (계산 그래프로 상상합니다.)
+
+           * 1단계: x에 -1을 곱합니다.
+           * 2단계: 1단계 -x에 exp(x)를 합니다. 여기서는 exp(-x)가 됩니다. (이 노드의 계산은 y=exp(x))
+           * 3단계: 2단계 exp(-x)에 1을 덥합니다. 즉 1+exp(-x)가 됩니다.
+           * 4단계: 3단계의 1+exp(-x)로 1을 나눕니다. 최종 y가 출력 됩니다. (이 노드의 계산은 y=1/x)
+
+         * 역전파 (역으로 미분을 계산합니다.)
+
+           * Sigmoid의 역전파 입력은 마찬가지로 다음기호를 사용합니다.
+             $$
+             \frac{\partial L}{\partial y}
+             $$
+
+           * 1단계: 순전파 4단계의 y=1/x의 미분을 구합니다. (Reciprocal Rule 사용)
+             $$
+             \frac{\partial y}{\partial x}=-\frac{1}{x^2} 
+             = -\frac{1}{(1+exp(-x))^2}
+             = -y^2
+             $$
+             여기에 상류(오른쪽)에서 전달 된 미분값을 곱하여 하류(왼쪽)으로 전달합니다.
+             $$
+             -\frac{\partial L}{\partial y}y^2
+             $$
+
+           * 2단계: 덧셈 노드는 앞서 배운대로 1을 곱하여 하류로 전달 합니다.
+
+           * 3단계: y=exp(x) 노드의 미분을 구합니다.
+             $$
+             \frac{\partial L}{\partial y}=exp(x)
+             $$
+             이 노드의 미분인 exp(x)를 상류에서 전달된 값에 곱합니다.
+             $$
+             -\frac{\partial L}{\partial y}y^2exp(-x)
+             $$
+
+           * 4단계: 곱셈 노드는 순전파의 반대 값을 곱합니다. 여기서는 -1입니다. (순전파 1단계 참고)
+             $$
+             -1\cdot-\frac{\partial L}{\partial y}y^2exp(-x) \\
+             =\frac{\partial L}{\partial y}y^2exp(-x)
+             $$
+
+           * 이처럼 Sigmoid 계층의 역전파의 최종출력을 구하였습니다. 이 역전파의 식을 보면 순전파의 출력과 입력만으로 Sigmoid의 역전파를 쉽게 계산할 수 있습니다. 
+
+           * 여러단계의 과정을 Sigmoid 계층에서는 저렇게 간소화 할 수 있습니다. 간소화는 즉 성능과 연결되며 더 효율적이라고 할 수 있습니다.
+
+           * 여기서 더 나아가 위 역전파 출력을 다음처러 정리 할 수 있습니다.
+             $$
+             \frac{\partial L}{\partial y}y^2exp(-x)=\frac{\partial L}{\partial y}\frac{1}{(1+exp(-x))^2}exp(-x) \\
+             =\frac{\partial L}{\partial y}\frac{1}{1+exp(-x)}\frac{exp(-x)}{1+exp(-x)} \\
+             =\frac{\partial L}{\partial y}y(1-y)
+             $$
+
+           * 정리한 역전파 형태를 보면 순전파의 최종 출력 값만으로 Sigmoid 계층의 역전파를 구할 수 있습니다. 좀 멋지죠?
+
+           * code
+
+             ```python
+             import numpy as np
+             
+             class Sigmoid:
+                 def __init__(self):
+                     self.out = None
+             
+                 def forward(self, x):
+                     self.out = 1 / (1+np.exp(-x))
+                     return self.out
+             
+                 def backward(self, dout):
+                     dx = dout * (self.out*(1.0-self.out))
+                     return dx
+             ```
+
+             
+
    4. Affine/Softmax 계층
       1. Affine
       2. Softmax

@@ -26,3 +26,21 @@ class Sigmoid:
     def backward(self, dout):
         dx = dout * (self.out*(1.0-self.out))
         return dx
+
+class Affine:
+    def __init__(self, W, B):
+        self.W = W
+        self.B = B
+        self.x = None
+        self.dW = None
+        self.db = None
+
+    def forward(self, x):
+        self.x = x
+        return np.dot(x, self.W) + self.B
+
+    def backward(self, dout):
+        dx = np.dot(dout, self.W.T)
+        self.dW = np.dot(self.x.T, dout)
+        self.db = np.sum(dout, axis=0)
+        return dx

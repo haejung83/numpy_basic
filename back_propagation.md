@@ -304,11 +304,93 @@
 
    4. Affine/Softmax 계층
       1. Affine
-      2. Softmax
 
-   5. Batch Affine 계층
+         * 신경망의 순전파에서는 가중치 신호의 총합을 계산하기 때문에 행렬의 내적(np.dot)을 사용하여 계산하였습니다. 행렬의 내적은 각 요소의 차원의 수를 일치 시켜야 합니다.
 
-   6. Softmax with Loss 계층
+         * X, W, B의 차원 수는 (2,), (2, 3), (3)으로 일치 하여야 합니다.
+
+         * code
+
+           ```python
+           >>> import numpy as np
+           >>> X = np.random.rand(5, 2)
+           >>> W = np.random.rand(2, 3)
+           >>> B = np.random.rand(3)
+           >>> Y = np.dot(X, W) + B
+           >>> X.shape
+           (5, 2)
+           >>> W.shape
+           (2, 3)
+           >>> B.shape
+           (3,)
+           >>> Y = np.dot(X, W) + B
+           >>> Y.shape
+           (5, 3)
+           ```
+
+         * 이러한 행렬의 내적은 기하학에서는 어파인 변환(Affine Transformation)이라고 합니다.
+
+         * 내적의 역전파
+           $$
+           \frac{\partial L}{\partial X}=\frac{\partial L}{\partial Y} \cdot W^T \\
+           \frac{\partial L}{\partial W}=X^T \cdot \frac{\partial L}{\partial Y}
+           $$
+
+         * 순전파의 입력인 X와 W의 전치행렬(Transpose)를 이용하여 상류로 부터 전달된 입력값으로 미분을 구한다.
+           ![handwrite_back_propagation_affine_one](./plot_images/back_propagation_affine_one.jpg)
+
+         * 참고로 행렬 내적의 역전파는 행렬의 대응하는 차원의 원소 수가 일치하도록 내적을 조립하여 구할 수 있다.
+
+      2. Batch Affine 계층
+
+         * 배치용 Affine 계층은 앞서 설명한 부분과 동일하다. 다만 순전파의 입력 X 단일만을 고려했으나 이를 배치(묶음)으로된 순전파에 대한 역전파를 생각해보겠습니다.
+
+         * 기존 X는 (2,)의 차원 형태를 가졌습니다. 배치형태는 (N, 2)의 형태로 볼 수 있습니다.
+           ![handwrite_back_propagation_affine_multiple](./plot_images/back_propagation_affine_multiple.jpg)
+
+         * **박스 A**는 순전파 X의 대한 역전파입니다. **박스 B**는 순전파 W의 대한 역전파 입니다.
+
+         * **박스 C**는 Bias(편향)에 대한 역전파입니다.
+
+         * 편향의 역전파는 출력 Y의 미분인 값을 **0번째 축으로 모두 더한 값**을 구하는 것입니다.
+
+         * code
+
+           ```python
+           >>> import numpy as np
+           >>> dY = np.array([[1,2,3],[4,5,6]])
+           >>> dY
+           array([[1, 2, 3],
+                  [4, 5, 6]])
+           
+           >>> dB = np.sum(dY, axis=0)
+           >>> dB
+           array([5, 7, 9])
+           ```
+
+           ```python
+           import numpy as np
+           
+           class Affine:
+               def __init__(self, W, B):
+                   self.W = W
+                   self.B = B
+                   self.x = None
+                   self.dW = None
+                   self.db = None
+           
+               def forward(self, x):
+                   self.x = x
+                   return np.dot(x, self.W) + self.B
+           
+               def backward(self, dout):
+                   dx = np.dot(dout, self.W.T)
+                   self.dW = np.dot(self.x.T, dout)
+                   self.db = np.sum(dout, axis=0)
+                   return dx
+           ```
+
+      3. Softmax with Loss 계층
 
 5. 최종 구현
 

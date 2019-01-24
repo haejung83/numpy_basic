@@ -1,4 +1,7 @@
 import numpy as np
+from identity import softmax
+from activation import sigmoid
+from loss import cross_entropy_error_by_index
 
 class ReLU:
     def __init__(self):
@@ -20,7 +23,7 @@ class Sigmoid:
         self.out = None
 
     def forward(self, x):
-        self.out = 1 / (1+np.exp(-x))
+        self.out = sigmoid(x)
         return self.out
 
     def backward(self, dout):
@@ -28,19 +31,45 @@ class Sigmoid:
         return dx
 
 class Affine:
-    def __init__(self, W, B):
+    def __init__(self, W, b):
         self.W = W
-        self.B = B
+        self.b = b
         self.x = None
+        self.original_x_shape = None
         self.dW = None
         self.db = None
 
     def forward(self, x):
+        self.original_x_shape = x.shape
+        x = x.reshape(x.shape[0], -1)
         self.x = x
-        return np.dot(x, self.W) + self.B
+        out = np.dot(self.x, self.W) + self.b
+        return out
 
     def backward(self, dout):
         dx = np.dot(dout, self.W.T)
         self.dW = np.dot(self.x.T, dout)
         self.db = np.sum(dout, axis=0)
+        dx = dx.reshape(*self.original_x_shape)
+        return dx
+
+class SoftmaxWithLoss:
+    def __init__(self):
+        self.y = None
+        self.t = None
+
+    def forward(self, x, t):
+        self.t = t
+        self.y = softmax(x)
+        return cross_entropy_error_by_index(self.y, self.t) # loss
+
+    def backward(self, dout=1):
+        batch_size = self.t.shape[0]
+        if self.t.size == self.y.size:
+            dx = (self.y - self.t) / batch_size
+        else:
+            dx = self.y.copy()
+            dx[np.arange(batch_size), self.t] -= 1
+            dx = dx / batch_size
+        
         return dx

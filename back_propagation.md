@@ -392,6 +392,162 @@
 
       3. Softmax with Loss 계층
 
+         * Softmax 계층은 입력값을 정규화(합이 1로)하여 출력합니다.
+
+         * 여기에 손실 함수이 Cross Entropy Error를 포함하여 계산 그래프를 살펴 봅시다.
+
+         * ![back_propagation_softmaxwithloss](./plot_images/back_propagation_softmaxwithloss.jpg)
+
+         * code
+
+           ```python
+           import numpy as np
+           
+           class SoftmaxWithLoss:
+               def __init__(self):
+                   self.y = None
+                   self.t = None
+           
+               def forward(self, x, t):
+                   self.t = t
+                   self.y = softmax(x)
+                   return cross_entropy_error(self.y, self.t) # loss
+           
+               def backward(self, dout):
+                   batch_size = self.t.shape[0]
+                   return (self.y - self.t) / batch_size
+           ```
+
 5. 최종 구현
 
+   * code
+
+     ```python
+     import sys
+     import os
+     import numpy as np
+     from collections import OrderedDict
+     
+     from activation import sigmoid
+     from identity import softmax
+     from loss import cross_entropy_error
+     from gradient import numerical_gradient_test as numerical_gradient
+     from layer import *
+     
+     # Referenced from Deep learning from scratch
+     class TwoLayerNet:
+     
+         def __init__(self, input_size, hidden_size, output_size, weight_init_std=0.01):
+             # Create weights
+             self._params = dict()
+             # First layer
+             self._params['W1'] = weight_init_std * np.random.randn(input_size, hidden_size)
+             self._params['b1'] = np.zeros(hidden_size)
+             # Second layer
+             self._params['W2'] = weight_init_std * np.random.randn(hidden_size, output_size)
+             self._params['b2'] = np.zeros(output_size)
+     
+             # Create layers
+             self.layers = OrderedDict()
+             self.layers['Affine1'] = Affine(self._params['W1'], self._params['b1'])
+             self.layers['Relu1'] = ReLU()
+             self.layers['Affine2'] = Affine(self._params['W2'], self._params['b2'])
+             self.lastLayer = SoftmaxWithLoss()
+     
+         def predict(self, x):
+             for layer in self.layers.values():
+                 x = layer.forward(x)
+             return x
+     
+         def loss(self, x, t):
+             y = self.predict(x)
+             return self.lastLayer.forward(y, t)
+     
+         def accuracy(self, x, t):
+             y = self.predict(x)
+             y = np.argmax(y, axis=1)
+             if t.ndim != 1:
+                 t = np.argmax(t, axis=1)
+     
+             accuracy = np.sum(y == t) / float(x.shape[0])
+             return accuracy
+     
+         def numerical_gradient(self, x, t):
+             loss_W = lambda W: self.loss(x, t)
+     
+             grads = dict()
+             grads['W1'] = numerical_gradient(loss_W, self._params['W1'])
+             grads['b1'] = numerical_gradient(loss_W, self._params['b1'])
+             grads['W2'] = numerical_gradient(loss_W, self._params['W2'])
+             grads['b2'] = numerical_gradient(loss_W, self._params['b2'])
+     
+             return grads
+     
+         def gradient(self, x, t):
+             # Forward
+             self.loss(x, t)
+     
+             # Backward
+             dout = 1
+             dout = self.lastLayer.backward(dout)
+     
+             layers = list(self.layers.values())
+             layers.reverse()
+             for layer in layers:
+                 dout = layer.backward(dout)
+     
+             grads = dict()
+             grads['W1'] = self.layers['Affine1'].dW
+             grads['b1'] = self.layers['Affine1'].db
+             grads['W2'] = self.layers['Affine2'].dW
+             grads['b2'] = self.layers['Affine2'].db
+     
+             return grads
+     ```
+
 6. 테스트
+
+   * code
+
+     ```python
+     import numpy as np
+     from dataset.mnist import load_mnist
+     from neural_net import TwoLayerNet
+     
+     (x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, one_hot_label=True)
+     
+     network = TwoLayerNet(input_size=784, hidden_size=50, output_size=10)
+     
+     x_batch = x_train[:3]
+     t_batch = t_train[:3]
+     
+     print('Start')
+     grad_numerical = network.numerical_gradient(x_batch, t_batch)
+     print('Done numerial_gradient')
+     grad_backprop = network.gradient(x_batch, t_batch)
+     print('Done back propagation gradient')
+     
+     for key in grad_numerical.keys():
+         diff = np.average(np.abs(grad_backprop[key] - grad_numerical[key]))
+         print(key + ': ' + str(diff))
+     ```
+
+   * 결과
+
+     ```python
+     $ python test_gradient_check.py
+     Done numerial_gradient
+     Done back propagation gradient
+     b1: 2.6311549924479216e-09
+     W2: 5.458446847051244e-09
+     b2: 1.399092815324021e-07
+     W1: 4.2689020480689323e-10
+     ```
+
+   * 역전파의 결과와 수치미분으로 구한 결과의 차분을 평균으로 하여 각 파라미터의 오차를 보았습니다.
+
+   * 컴퓨터의 부동소수점 계산의 오차로 정확히 0으로 일치하지 않지만 매우 작은 수치의 오차를 보임을 알 수 있습니다. 
+
+   * 이처럼 수치미분은 속도가 느린 단점이 있지만 구현이 쉽고 버그가 숨어 있기 어렵기 때문에 역전파로 작성된 계층의 오류를 판별하기 위해 사용 됩니다.
+
+   * 저도 초반에 작성한 Softmax, Cross entroph error의 넘파이 다차원 처리가 되어 있지 않아 많은 오차를 보여 놀랐습니다. 하지만 이런 용도이기 때문에 문제를 인식하고 작성한 역전파 코드를 검증할 수 있습니다.

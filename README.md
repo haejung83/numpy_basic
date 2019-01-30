@@ -32,5 +32,6 @@
     * [수치 미분 (Numericla Differential)](numerical_differential.md)
     * [기울기 (Gradient)](gradient.md)
   * [오차역전파 (Back Propagation)](back_propagation.md)
+  * [최적화 기법 (Optimization)](./optimize.md)
 
 
